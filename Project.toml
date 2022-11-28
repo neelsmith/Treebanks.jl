@@ -1,0 +1,8 @@
+name = "Treebanks"
+uuid = "64f30800-8bfd-42c1-8d67-a0fe2fc2f5f5"
+authors = ["Neel Smith  <dnsmith.neel@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+EzXML = "8f5d6c58-4d21-5cfd-889c-e3ad7ee6a615"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
