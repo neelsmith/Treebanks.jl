@@ -19,7 +19,7 @@ a `ParsedWord` object.
 """
 function word(n::EzXML.Node)
     ParsedWord(
-        n["id"],
+        parse(Int, n["id"]),
         n["form"], 
         n["lemma"], 
         n["postag"], 
