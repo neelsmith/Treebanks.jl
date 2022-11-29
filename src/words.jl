@@ -1,4 +1,6 @@
-
+#=
+https://github.com/PerseusDL/treebank_data/blob/master/AGDT2/guidelines/Greek_guidelines.md
+=#
 """String values encode in XML for a word
 in Perseus treebanks.
 """
@@ -21,7 +23,7 @@ function word(n::EzXML.Node)
         n["form"], 
         n["lemma"], 
         n["postag"], 
-        n["head"],
+        parse(Int, n["head"]),
         n["relation"]
     )
 end
@@ -37,3 +39,4 @@ function ispunct(w::ParsedWord) :: Bool
     end
     allpunct
 end
+

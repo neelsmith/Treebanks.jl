@@ -17,3 +17,16 @@ function text(s::Sentence)
     end
     join(pieces) |> strip
 end
+
+function root(s::Sentence)
+    graphroots = filter(w -> w.head == 0, s.words)
+    if isempty(graphroots)
+        @warn("No root element found")
+        nothing
+    elseif length(graphroots) > 1
+        @warn("More than one root element found.")
+        graphroots
+    else
+        graphroots[1]
+    end
+end
