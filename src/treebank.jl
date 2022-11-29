@@ -22,7 +22,7 @@ end
 """Build a treebank, that is, a vector of `Sentence`s, from  a parsed XML document for a Perseus treebank.  
 """
 function treebank(doc::EzXML.Document; ns = "greekLit", idprefix = "tlg")
-    elems = findall("sentence", root(doc))
+    elems = findall("sentence", EzXML.root(doc))
     map(elem -> sentence(elem), elems)
 end
 

@@ -2,6 +2,8 @@ module Treebanks
 
 using EzXML
 using CitableText
+using Graphs
+using SimpleValueGraphs
 import Base: ispunct
 using Test
 
