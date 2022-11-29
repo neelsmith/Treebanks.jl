@@ -1,11 +1,3 @@
-"""A sentence is a vector of words identified by
-a `CtsUrn`.
-"""
-struct Sentence
-    urn::CtsUrn
-    words::Vector{ParsedWord}
-end
-
 
 """A kludge to construct a CTS URN
 value for an XML `sentence` element.
@@ -16,8 +8,6 @@ function urnify(sentence::EzXML.Node; ns = "greekLit", idprefix = "tlg")
     idval = idprefix * replace(sentence["document_id"], "-" => idprefix) * ".tb:"
     string(urnbase, idval, sentence["id"],".", sentence["subdoc"]) |> CtsUrn 
 end
-
-
 
 """Construct a `Sentence` object from a parsed XML element named `sentence`.
 """

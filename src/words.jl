@@ -26,4 +26,14 @@ function word(n::EzXML.Node)
     )
 end
     
-    
+"""True if all characters is the `form` string of a word are punctuation characters.
+"""
+function ispunct(w::ParsedWord) :: Bool
+    allpunct = true
+    for c in w.form
+        if ! ispunct(c)
+            allpunct = false
+        end
+    end
+    allpunct
+end
