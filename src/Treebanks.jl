@@ -10,6 +10,7 @@ using Test
 include("words.jl")
 include("sentences.jl")
 include("treebank.jl")
+include("graphs.jl")
 
 
 export Sentence
