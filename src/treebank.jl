@@ -33,11 +33,18 @@ function treebank(doc::EzXML.Document; ns = "greekLit", idprefix = "tlg")
     sentences = Sentence[]
     for elem in elems
         u = urnify(elem, ns = ns, idprefix = idprefix)
-        push!(sentences, Sentence(u, []))
+        words = findall("word", elem)
+        parsedwords = map(w -> word(w), words)
+
+        push!(sentences, Sentence(u, parsedwords))
     end
     sentences
 end
- 
+
+
+"""Read a file with XML source for a Perseus tree bank,
+and parse it into a `Treebank` object.
+"""
 function readtreebank(f; ns = "greekLit", idprefix = "tlg")
     doc = readxml(f)
     treebank(doc, ns = ns, idprefix = idprefix)

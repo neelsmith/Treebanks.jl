@@ -17,12 +17,12 @@ a `ParsedWord` object.
 """
 function word(n::EzXML.Node)
     ParsedWord(
-        word["id"],
-        word["form"], 
-        word["lemma"], 
-        word["postag"], 
-        word["head"],
-        word["relation"]
+        n["id"],
+        n["form"], 
+        n["lemma"], 
+        n["postag"], 
+        n["head"],
+        n["relation"]
     )
 end
     
