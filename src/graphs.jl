@@ -6,7 +6,7 @@ function idxforid(id, wordvect)
 end
 
 
-"""Construct a graph of words in sentence `s`.
+"""Construct a directed graph of words in sentence `s`.
 """
 function graph(s::Sentence)
     nodevals = map(s.words) do w
@@ -30,7 +30,33 @@ function graph(s::Sentence)
     g
 end
    
-function dependentwords(wordidx, gr, s)
+function dependentwords(wordidx, gr::T, s::Sentence)  where  T <: SimpleValueGraphs.ValDiGraph
     indexes = inneighbors(gr, wordidx)
     map(i -> s.words[i], indexes)
+end
+
+
+   
+function dependentwords(w::ParsedWord, gr::T, s::Sentence)  where  T <: SimpleValueGraphs.ValDiGraph
+    keyval = idxforid(w.id, s.words)
+    dependentwords(keyval, gr, s)
+end
+
+function rootidx(gr::T) where T <: SimpleValueGraphs.ValDiGraph
+    rootidx = -1
+    for v in vertices(gr)
+        if get_vertexval(gr, v, :parent) == 0
+            @debug("Found root index $(v).")
+            rootidx = v
+        end
+    end
+    rootidx
+end
+
+function root(gr::T, wordlist::Vector{ParsedWord}) where T <: SimpleValueGraphs.ValDiGraph
+    wordlist[rootidx(gr)]
+end
+
+function root(gr::T, s::Sentence) where T <: SimpleValueGraphs.ValDiGraph
+    root(gr, s.words)
 end
