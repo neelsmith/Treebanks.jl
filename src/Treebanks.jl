@@ -4,6 +4,9 @@ using EzXML
 using CitableText
 using Graphs
 using SimpleValueGraphs
+using Documenter
+using DocStringExtensions
+
 import Base: ispunct
 using Test
 
