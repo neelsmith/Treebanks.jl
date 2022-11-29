@@ -40,3 +40,18 @@ function ispunct(w::ParsedWord) :: Bool
     allpunct
 end
 
+
+
+
+
+#=
+Some of the values to watch for:
+    PRED = verb of main clause
+    COORD = coordinating conjunction
+    AuxC = subordinating conjunction
+    OCOMP = "predicative accusative"
+    SBJ = subjet of verb
+    PNOM = predicative nominative
+    OBJ= apparently almost anything
+
+=#

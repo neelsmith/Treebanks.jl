@@ -1,6 +1,6 @@
 # Treebanks.jl
 
-A Julia package to parse the Perseus treebanks at <https://perseids-publications.github.io/glaux-trees/>.
+A Julia package to work with the Perseus treebanks available at <https://perseids-publications.github.io/glaux-trees/>.
 
 ## Test data
 

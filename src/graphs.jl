@@ -10,11 +10,11 @@ end
 """
 function graph(s::Sentence)
     nodevals = map(s.words) do w
-        (id = w.id, parent = w.head, form = w.form, morphcode = w.morphcode)
+        (id = w.id, parent = w.head, form = w.form, morphcode = w.morphcode, relation = w.relation)
     end
     g = ValDiGraph(
         length(s.words);
-        vertexval_types=(id = Int, parent = Int, form = String, morphcode = String),
+        vertexval_types=(id = Int, parent = Int, form = String, morphcode = String, relation = String),
         vertexval_init= v -> nodevals[v],
         edgeval_types=(relation=String,)
     )
@@ -23,10 +23,14 @@ function graph(s::Sentence)
         if w.parent == 0
             # root
         else
-            @info("LInk $(w.id)->$(w.parent)")
+            @debug("Link $(w.id)->$(w.parent)")
             add_edge!(g, idxforid(w.id, s.words), idxforid(w.parent, s.words), (relation = w.morphcode,))     
         end
     end
     g
 end
    
+function dependentwords(wordidx, gr, s)
+    indexes = inneighbors(gr, wordidx)
+    map(i -> s.words[i], indexes)
+end
