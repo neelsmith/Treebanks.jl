@@ -1,5 +1,11 @@
 module Treebanks
 
-greet() = print("Hello World!")
+using EzXML
+using CitableText
+
+using Test
+
+include("words.jl")
+include("treebank.jl")
 
 end # module Treebanks
