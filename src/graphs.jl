@@ -98,6 +98,16 @@ verbal units.
 function cluster(s::Sentence)
     g = graph(s)
     id = rootidx(g)
+    maxdepth = depth_in_vus(id, g, s)
+    datamatrix = []
+    for i in 1:maxdepth
+        push!(datamatrix, [])
+    end
+    # Now push to each tier the appropriate 
+    # number of matrices for each VU
+    
+    datamatrix
+    #=
     depth = num_vus(id, g, s)
     clusters = []
     for i in 1:depth
@@ -105,8 +115,11 @@ function cluster(s::Sentence)
     end
     @info("\nPrepared to cluster s from root $(id)")
     tiers(id, g, s, clusters)
+    =#
 end
 
+function depthperlevel(id, gr, s, m)
+end
 
 """Compute number of verbal units in sentence `s`
 """
