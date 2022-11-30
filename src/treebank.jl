@@ -18,6 +18,11 @@ function sentence(n::EzXML.Node; ns = "greekLit", idprefix = "tlg")
     Sentence(u, parsedwords)
 end
 
+function serialize(tb::Vector{Sentence}; delimiter = "|")
+    header = join(["id", "form", "lemma", "morphcode", "head", "relation"], delimiter) * "\n"
+
+    header * join(map(s -> serialize(s), tb), "\n")
+end
 
 """Build a treebank, that is, a vector of `Sentence`s, from  a parsed XML document for a Perseus treebank.  
 """

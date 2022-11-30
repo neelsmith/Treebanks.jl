@@ -18,6 +18,16 @@ function text(s::Sentence)
     join(pieces) |> strip
 end
 
+function serialize(s::Sentence; delimiter = "|", header = false)
+    rows = join(map(w -> serialize(w, delimiter = delimiter), s.words), "\n")
+
+    if header
+        join(["id", "form", "lemma", "morphcode", "head", "relation"], delimiter) * "\n" * rows
+    else
+        rows
+    end
+end
+
 function root(s::Sentence)
     graphroots = filter(w -> w.head == 0, s.words)
     if isempty(graphroots)

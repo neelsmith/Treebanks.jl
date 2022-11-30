@@ -41,7 +41,9 @@ function ispunct(w::ParsedWord) :: Bool
 end
 
 
-
+function serialize(w::ParsedWord; delimiter = "|")
+    join([w.id, w.form, w.lemma, w.morphcode, w.head, w.relation], delimiter)
+end
 
 
 #=
