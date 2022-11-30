@@ -10,6 +10,8 @@ using DocStringExtensions
 import Base: ispunct
 using Test
 
+
+include("morphcodes.jl")
 include("words.jl")
 include("sentences.jl")
 include("treebank.jl")
