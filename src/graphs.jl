@@ -91,20 +91,6 @@ function transitionword(w::ParsedWord)
 
 end
 
-"""Determine depth in Verbal Units of sentence `s`.
-"""
-function depth_in_vus(id, gr, s, currlevel = 1)
-    bump = false
-    for wd in dependentwordindices(id, gr, s)
-        if transitionword(wd) 
-            bump = true
-        end
-    end
-    newlevel = bump ? currlevel + 1 : currlevel
-    newlevel
-end
-
-
 
 """Parse tokens in sentence `s` into 
 verbal units.
@@ -139,6 +125,38 @@ function num_vus(id, gr, s, verbalunit = 1)
 end
 
 
+"""Determine depth in Verbal Units of sentence `s`.
+"""
+function depth_in_vus(id, gr, s, currlevel = 1)
+    bump = false
+    for wd in dependentwordindices(id, gr, s)
+        if transitionword(wd) 
+            bump = true
+        end
+    end
+    newlevel = bump ? currlevel + 1 : currlevel
+    newlevel
+end
+
+
+#=
+function level_vu_matrix(id, gr, s, level = 1, verbalunit = 1)
+    currword = s.words[id]
+    @info("level-vu matrix: examine $(id)/$(currword.form) at $(level) in VU $(verbalunit)")
+    
+   
+    for wd in dependentwordindices(id, gr, s)
+        newlevel = level
+        if transitionword(wd) 
+            newlevel = newlevel + 1
+            verbalunit = verbalunit + 1
+        end
+        newid = idxforid(wd.id, s.words)
+        level_vu_matrix(newid, gr, s, newlevel, verbalunit )
+    end
+    
+end
+=#
 """Recursively walk the graph starting at node `id`.
 """
 function tiers(id, gr, s::Sentence, tieredtokens; currlevel = 1, verbalunit = 1)  
@@ -153,36 +171,8 @@ function tiers(id, gr, s::Sentence, tieredtokens; currlevel = 1, verbalunit = 1)
             verbalunit = verbalunit + 1
         end
         newid = idxforid(wd.id, s.words)
-        #push!(tieredtokens[verbalunit], s.words[newid].form)
         tiers(newid, gr, s, tieredtokens, currlevel = newlevel, verbalunit = verbalunit )
     end
     tieredtokens
 end
 
-
-
-
-#=
-
-"""Recursively add verbal units.
-"""
-function verbalunits(s::Sentence, from = nothing, clusters = [], level = 1)
-    if isnothing(from)
-        verbalunits(s, clusters, level)
-    end
-end
-
-function verbalunits(s::Sentence, clusters = [], level = 1)
-    gr = graph(s)
-    sroot = root(s)
-    currentlevel = [sroot]
-    nexttier = dependentwords(sroot, gr, s)
-    for w in nexttier
-        if transitionword(w)
-        else
-            push!(currentlevel, w)
-            println(w.form, " + ", w.relation)
-        end
-    end
-    currentlevel
-end=#
