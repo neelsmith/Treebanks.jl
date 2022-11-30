@@ -60,3 +60,41 @@ end
 function root(gr::T, s::Sentence) where T <: SimpleValueGraphs.ValDiGraph
     root(gr, s.words)
 end
+
+
+function unitwords()
+end
+
+
+function transitionword(w::ParsedWord)
+    if w.relation in ["AuxC"]
+        true
+    else
+        false
+    end
+
+end
+
+#=
+"""Recursively add verbal units.
+"""
+function verbalunits(s::Sentence, from = nothing, clusters = [], level = 1)
+    if isnothing(from)
+        verbalunits(s, clusters, level)
+    end
+end
+=#
+function verbalunits(s::Sentence, clusters = [], level = 1)
+    gr = graph(s)
+    sroot = root(s)
+    currentlevel = [sroot]
+    nexttier = dependentwords(sroot, gr, s)
+    for w in nexttier
+        if transitionword(w)
+        else
+            push!(currentlevel, w)
+            println(w.form, " + ", w.relation)
+        end
+    end
+    currentlevel
+end
