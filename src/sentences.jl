@@ -19,10 +19,10 @@ function text(s::Sentence)
 end
 
 function serialize(s::Sentence; delimiter = "|", header = false)
-    rows = join(map(w -> serialize(w, delimiter = delimiter), s.words), "\n")
+    rows = join(map(w -> serialize(w, s.urn, delimiter = delimiter), s.words), "\n")
 
     if header
-        join(["id", "form", "lemma", "morphcode", "head", "relation"], delimiter) * "\n" * rows
+        join(["urn", "id", "form", "lemma", "morphcode", "head", "relation"], delimiter) * "\n" * rows
     else
         rows
     end
