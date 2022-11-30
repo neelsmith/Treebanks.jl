@@ -29,19 +29,25 @@ function graph(s::Sentence)
     end
     g
 end
-   
-function dependentwords(wordidx, gr::T, s::Sentence)  where  T <: SimpleValueGraphs.ValDiGraph
+
+
+function dependentwordindices(wordidx, gr::T, s::Sentence)  where  T <: SimpleValueGraphs.ValDiGraph
     indexes = inneighbors(gr, wordidx)
     map(i -> s.words[i], indexes)
 end
 
 
-   
+"""Compile a list of all parsed words in sentence `s` that depend directly
+on `w`.
+"""   
 function dependentwords(w::ParsedWord, gr::T, s::Sentence)  where  T <: SimpleValueGraphs.ValDiGraph
     keyval = idxforid(w.id, s.words)
-    dependentwords(keyval, gr, s)
+    dependentwordindices(keyval, gr, s)
 end
 
+"""Find the node index for the root (head) node of the
+graph `gr`.
+"""
 function rootidx(gr::T) where T <: SimpleValueGraphs.ValDiGraph
     rootidx = -1
     for v in vertices(gr)
@@ -53,19 +59,24 @@ function rootidx(gr::T) where T <: SimpleValueGraphs.ValDiGraph
     rootidx
 end
 
+"""Find the parsed word that is the root (head) of the graph for 
+the vector of parsed words in `wordlist`.
+"""
 function root(gr::T, wordlist::Vector{ParsedWord}) where T <: SimpleValueGraphs.ValDiGraph
     wordlist[rootidx(gr)]
 end
 
+"""Find the parsed word that is the root (head) of the graph for 
+sentence `s`.
+"""
 function root(gr::T, s::Sentence) where T <: SimpleValueGraphs.ValDiGraph
     root(gr, s.words)
 end
 
 
-function unitwords()
-end
-
-
+"""True if `w` introduces a transition to a new
+verbal unit.
+"""
 function transitionword(w::ParsedWord)
     if w.relation in ["AuxC"]
         @info("-> Change in conjunction $(w.form)")
@@ -84,36 +95,75 @@ end
 """
 function depth_in_vus(id, gr, s, currlevel = 1)
     bump = false
-    for wd in dependentwords(id, gr, s)
+    for wd in dependentwordindices(id, gr, s)
         if transitionword(wd) 
             bump = true
         end
     end
     newlevel = bump ? currlevel + 1 : currlevel
-    for wd in dependentwords(id, gr, s)
-        newid = idxforid(wd.id, s.words)
-        tiers(newid, gr, s, newlevel )
-    end
     newlevel
 end
 
+
+
+"""Parse tokens in sentence `s` into 
+verbal units.
+"""
+function cluster(s::Sentence)
+    g = graph(s)
+    id = rootidx(g)
+    depth = num_vus(id, g, s)
+    clusters = []
+    for i in 1:depth
+        push!(clusters, String[])
+    end
+    @info("\nPrepared to cluster s from root $(id)")
+    tiers(id, g, s, clusters)
+end
+
+
+"""Compute number of verbal units in sentence `s`
+"""
+function num_vus(id, gr, s, verbalunit = 1)
+    currword = s.words[id]
+    @debug("num_vus: examine $(id)/$(currword.form) in VU $(verbalunit)")
+    
+    for wd in dependentwordindices(id, gr, s)
+        if transitionword(wd) 
+            verbalunit = verbalunit + 1
+        end
+        newid = idxforid(wd.id, s.words)
+        num_vus(newid, gr, s, verbalunit )
+    end
+    verbalunit
+end
+
+
 """Recursively walk the graph starting at node `id`.
 """
-function tiers(id, gr, s::Sentence, currlevel = 1, verbalunit = 1)  
+function tiers(id, gr, s::Sentence, tieredtokens; currlevel = 1, verbalunit = 1)  
     currword = s.words[id]
-    @info("Examine $(id)/$(currword.form) at $(currlevel) in VU $(verbalunit)")
+    @info("tiers: examine $(id)/$(currword.form) at $(currlevel) in VU $(verbalunit)")
     
-    for wd in dependentwords(id, gr, s)
+    push!(tieredtokens[verbalunit], currword.form)
+    for wd in dependentwordindices(id, gr, s)
         newlevel = currlevel
         if transitionword(wd) 
             newlevel = newlevel + 1
             verbalunit = verbalunit + 1
         end
         newid = idxforid(wd.id, s.words)
-        tiers(newid, gr, s, newlevel, verbalunit )
+        #push!(tieredtokens[verbalunit], s.words[newid].form)
+        tiers(newid, gr, s, tieredtokens, currlevel = newlevel, verbalunit = verbalunit )
     end
+    tieredtokens
 end
+
+
+
+
 #=
+
 """Recursively add verbal units.
 """
 function verbalunits(s::Sentence, from = nothing, clusters = [], level = 1)
@@ -121,7 +171,7 @@ function verbalunits(s::Sentence, from = nothing, clusters = [], level = 1)
         verbalunits(s, clusters, level)
     end
 end
-=#
+
 function verbalunits(s::Sentence, clusters = [], level = 1)
     gr = graph(s)
     sroot = root(s)
@@ -135,4 +185,4 @@ function verbalunits(s::Sentence, clusters = [], level = 1)
         end
     end
     currentlevel
-end
+end=#
