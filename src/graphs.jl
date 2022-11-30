@@ -68,13 +68,51 @@ end
 
 function transitionword(w::ParsedWord)
     if w.relation in ["AuxC"]
+        @info("-> Change in conjunction $(w.form)")
         true
+    elseif w.morphcode[5] == 'p' # participle
+        @info("-> Change on participle $(w.form)")
+        true
+    # elseif  LOOK FOR INDIRECT STATEMENT
     else
         false
     end
 
 end
 
+"""Determine depth in Verbal Units of sentence `s`.
+"""
+function depth_in_vus(id, gr, s, currlevel = 1)
+    bump = false
+    for wd in dependentwords(id, gr, s)
+        if transitionword(wd) 
+            bump = true
+        end
+    end
+    newlevel = bump ? currlevel + 1 : currlevel
+    for wd in dependentwords(id, gr, s)
+        newid = idxforid(wd.id, s.words)
+        tiers(newid, gr, s, newlevel )
+    end
+    newlevel
+end
+
+"""Recursively walk the graph starting at node `id`.
+"""
+function tiers(id, gr, s::Sentence, currlevel = 1, verbalunit = 1)  
+    currword = s.words[id]
+    @info("Examine $(id)/$(currword.form) at $(currlevel) in VU $(verbalunit)")
+    
+    for wd in dependentwords(id, gr, s)
+        newlevel = currlevel
+        if transitionword(wd) 
+            newlevel = newlevel + 1
+            verbalunit = verbalunit + 1
+        end
+        newid = idxforid(wd.id, s.words)
+        tiers(newid, gr, s, newlevel, verbalunit )
+    end
+end
 #=
 """Recursively add verbal units.
 """
