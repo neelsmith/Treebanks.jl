@@ -16,7 +16,8 @@ using Documenter, DocStringExtensions, Treebanks
 makedocs(
     sitename = "Treebanks.jl Documentation",
     pages = [
-        "Home" => "index.md"
+        "Home" => "index.md",
+        "Modelling Greek syntax" => "model.md"
     ]
 )
 
