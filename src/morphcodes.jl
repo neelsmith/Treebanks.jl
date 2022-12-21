@@ -75,8 +75,6 @@ function decodevoice(s::T)::Vector{GMPVoice} where T <: AbstractString
     voice
 end
 
-
-#function finiteverbcode(s::T)::Union{Nothing,GMFFiniteVerb}  where T <: AbstractString
 function decodefiniteverb(s::T)::Vector{GMFFiniteVerb} where T <: AbstractString
     reslts = GMFFiniteVerb[]
 
@@ -92,48 +90,17 @@ function decodefiniteverb(s::T)::Vector{GMFFiniteVerb} where T <: AbstractString
     reslts
 end
 
-function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractString
+function decodeinfinitive(s::T)::Vector{GMFInfinitive} where T <: AbstractString
+    reslts = GMFInfinitive[]
+
     pieces = split(s, "")
-    reslt  = GreekMorphologicalForm[]
-    
-#=
-PoS:
-a ADJECTIVE
-b COORD CONJUNCTION
-c SUBORD CONJUNCTION
-d d-------- == any damn uninflected thing in Greek (!!) AND ALL ADVERBS ARE HERE!
-i EXCLAM w
-l ARTICLE
-n NOUN
-p PRONOUN
-
-
-    =#
-    if s == "r--------"
-        # preposition
-
-    elseif pieces[1] == "v"
-        if pieces[5] == "p"
-            # participle
-        elseif pieces[5] == "n"
-            # infinitive
-            
-        elseif pieces[2] != "-"
-            reslt = decodefiniteverb(s)
-        else
-            @error("Unrecognized verb form: $(s)")
-        end
-    elseif s == "u--------"
-        # punctuation
+    tense = decodetense(pieces[4])
+    voice = decodevoice(pieces[6])
+    for v in voice
+        push!(reslts, GMFInfinitive(tense, v))
     end
-    reslt
+    reslts
 end
-
-#=
-urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141254|μέγιστα|μέγας|a-p---nas|5141255|OBJ
-urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141255|δυναμένους|δύναμαι|v-pppema-|5141251|ADV
-urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141256|ἀποδέδοται|ἀποδίδωμι|v3srie---|0|PRED
-=#
 
 #=
 Nine elements:
@@ -148,3 +115,52 @@ Nine elements:
 8. case
 9. degree
 =#
+"""Parse treebank code string for "morphological" analysis into
+zero or more `GreekMorphologicalForm`s.
+"""
+function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractString
+    pieces = split(s, "")
+    reslt  = GreekMorphologicalForm[] 
+    
+    if s == "r--------" || s == "d--------" || s == "u--------"
+    # 1. preposition and any damn uninflected thing in Greek,
+    # 2. including all adverbs!
+    # 3. punctuation
+    #
+    # pieces[1]      == PoS code
+    #
+    elseif pieces[1] == "a"
+        # adjective
+    elseif pieces[1] == "b"        
+        # coord. conj.
+    elseif pieces[1] == "c"        
+        # subord. conj.
+    elseif pieces[1] == "i" 
+        # exclamatory W!
+    elseif pieces[1] == "l"         
+        # ARTICLE
+    elseif pieces[1] == "n"                 
+        # NOUN
+    elseif pieces[1] == "p"                         
+        # PRONOUN
+    elseif pieces[1] == "v"
+        if pieces[5] == "p"
+            # participle
+        elseif pieces[5] == "n"
+            # infinitive
+            reslt = decodeinfinitive(s)
+        elseif pieces[2] != "-"
+            reslt = decodefiniteverb(s)
+        else
+            @error("Unrecognized verb form: $(s)")
+        end     
+    end
+    reslt
+end
+
+#=
+urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141254|μέγιστα|μέγας|a-p---nas|5141255|OBJ
+urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141255|δυναμένους|δύναμαι|v-pppema-|5141251|ADV
+urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141256|ἀποδέδοται|ἀποδίδωμι|v3srie---|0|PRED
+=#
+
