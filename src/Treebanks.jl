@@ -2,6 +2,7 @@ module Treebanks
 
 using EzXML
 using CitableText
+using Kanones
 using Graphs
 using SimpleValueGraphs
 using Documenter
