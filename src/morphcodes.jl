@@ -92,20 +92,39 @@ function decodefiniteverb(s::T)::Vector{GMFFiniteVerb} where T <: AbstractString
     reslts
 end
 
-function morphology(s::T) where T <: AbstractString
+function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractString
     pieces = split(s, "")
-    reslt  = nothing
-    if pieces[1] == "v"
-        
+    reslt  = GreekMorphologicalForm[]
+    
+#=
+PoS:
+a ADJECTIVE
+b COORD CONJUNCTION
+c SUBORD CONJUNCTION
+d d-------- == any damn uninflected thing in Greek (!!) AND ALL ADVERBS ARE HERE!
+i EXCLAM w
+l ARTICLE
+n NOUN
+p PRONOUN
+
+
+    =#
+    if s == "r--------"
+        # preposition
+
+    elseif pieces[1] == "v"
         if pieces[5] == "p"
             # participle
         elseif pieces[5] == "n"
             # infinitive
+            
         elseif pieces[2] != "-"
             reslt = decodefiniteverb(s)
         else
             @error("Unrecognized verb form: $(s)")
         end
+    elseif s == "u--------"
+        # punctuation
     end
     reslt
 end
