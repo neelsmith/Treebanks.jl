@@ -16,6 +16,11 @@ function decodeperson(s::T)::Union{Nothing,GMPPerson}  where T <: AbstractString
     pers
 end
 
+
+"""Return `GMPNumber` for treebanks morphology code string,
+or nothing if no value for number defined.
+$SIGNATURES    
+"""
 function decodenumber(s::T)::Union{Nothing,GMPNumber}  where T <: AbstractString
     num = nothing
     if s == "s"
@@ -28,7 +33,10 @@ function decodenumber(s::T)::Union{Nothing,GMPNumber}  where T <: AbstractString
     num
 end
 
-
+"""Return `GMPTense` for treebanks morphology code string,
+or nothing if no value for tense defined.
+$SIGNATURES    
+"""
 function decodetense(s::T)::Union{Nothing,GMPTense}  where T <: AbstractString
     tense = nothing
     if s == "p"
@@ -47,6 +55,11 @@ function decodetense(s::T)::Union{Nothing,GMPTense}  where T <: AbstractString
     tense
 end
 
+
+"""Return `GMPMood` for treebanks morphology code string,
+or nothing if no value for mood defined.
+$SIGNATURES    
+"""
 function decodemood(s::T)::Union{Nothing,GMPMood}  where T <: AbstractString
     mood = nothing
     if s == "i"
@@ -62,6 +75,10 @@ function decodemood(s::T)::Union{Nothing,GMPMood}  where T <: AbstractString
 end
 
 
+"""Return `GMPVoice` for treebanks morphology code string,
+or nothing if no value for voice is defined.
+$SIGNATURES    
+"""
 function decodevoice(s::T)::Vector{GMPVoice} where T <: AbstractString
     voice = []
     @info("Voice ", voice)
@@ -79,6 +96,11 @@ function decodevoice(s::T)::Vector{GMPVoice} where T <: AbstractString
 end
 
 
+
+"""Return `GMPGender` for treebanks morphology code string,
+or nothing if no value for gender is defined.
+$SIGNATURES    
+"""
 function decodegender(s::T)::Union{Nothing,GMPGender}  where T <: AbstractString
     gender = nothing
     if s == "m"
@@ -93,7 +115,10 @@ end
 
 
 
-
+"""Return `GMPCase` for treebanks morphology code string,
+or nothing if no value for case is defined.
+$SIGNATURES    
+"""
 function decodecase(s::T)::Union{Nothing,GMPCase}  where T <: AbstractString
     gramcase = nothing
     if s == "n"
@@ -111,6 +136,10 @@ function decodecase(s::T)::Union{Nothing,GMPCase}  where T <: AbstractString
 
 end
 
+"""Return `GMPDegree` for treebanks morphology code string,
+or nothing if no value for degree is defined.
+$SIGNATURES    
+"""
 function decodedegree(s::T)::Union{Nothing,GMPDegree}  where T <: AbstractString
     degree = nothing
     if s == "c"
@@ -121,6 +150,13 @@ function decodedegree(s::T)::Union{Nothing,GMPDegree}  where T <: AbstractString
     degree
 end
 
+
+
+
+"""Return a vector of `GMFFiniteVerb` objects for a treebanks morphology code string.
+If no valid value for a finite verb form is encoded, the vector is empty.
+$SIGNATURES    
+"""
 function decodefiniteverb(s::T)::Vector{GMFFiniteVerb} where T <: AbstractString
     reslts = GMFFiniteVerb[]
 
@@ -136,6 +172,11 @@ function decodefiniteverb(s::T)::Vector{GMFFiniteVerb} where T <: AbstractString
     reslts
 end
 
+
+"""Return a vector of `GMFInfinitive` objects for a treebanks morphology code string.
+If no valid value for an infinitive form is encoded, the vector is empty.
+$SIGNATURES    
+"""
 function decodeinfinitive(s::T)::Vector{GMFInfinitive} where T <: AbstractString
     reslts = GMFInfinitive[]
 
@@ -148,6 +189,12 @@ function decodeinfinitive(s::T)::Vector{GMFInfinitive} where T <: AbstractString
     reslts
 end
 
+
+
+"""Return a vector of `GMFNoun` objects for a treebanks morphology code string.
+If no valid value for a noun form is encoded, the vector is empty.
+$SIGNATURES    
+"""
 function decodenoun(s::T)::Vector{GMFNoun} where T <: AbstractString
     reslts = GMFNoun[]
 
@@ -158,19 +205,24 @@ function decodenoun(s::T)::Vector{GMFNoun} where T <: AbstractString
     push!(reslts, GMFNoun(gender, gramcase, num))
 end
 
-#=
-Nine elements:
 
-1. part of speech
-2. person
-3. number
-4. tense
-5. mood
-6. voice
-7. gender
-8. case
-9. degree
-=#
+"""Return a vector of `GMFAdjective` objects for a treebanks morphology code string.
+Note that in AGLDT morphology, only the positive degree of adjectives is encoded!
+If no valid value for an adjective form is encoded, the vector is empty.
+$SIGNATURES    
+"""
+function decodeadjective(s::T)::Vector{GMFAdjective} where T <: AbstractString
+    reslts = GMFAdjective[]
+
+    pieces = split(s, "")
+    gender = decodegender(pieces[7])
+    gramcase = decodecase(pieces[8])
+    num = decodenumber(pieces[3])
+    positivedegree = GMPDegree(1)
+    push!(reslts, GMFAdjective(gender, gramcase, num, positivedegree))
+end
+
+
 """Parse treebank code string for "morphological" analysis into
 zero or more `GreekMorphologicalForm`s.
 """
@@ -188,7 +240,7 @@ function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractStr
     # pieces[1]      == PoS code
     #
     elseif pieces[1] == "a"
-        # adjective
+        function decodeadjective(s)
     elseif pieces[1] == "b"        
         # coord. conj.
     elseif pieces[1] == "c"        
