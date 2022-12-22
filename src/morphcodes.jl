@@ -231,16 +231,19 @@ function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractStr
     reslt  = GreekMorphologicalForm[] 
     
     # Ignore these:
-    if s == "r--------" || s == "d--------" || s == "u--------"
-    # 1. preposition 
-    # 2. any damn uninflected thing in Greek, including (in their view) all adverbs!
-    # 3. punctuation
-    #
+    if  s == "d--------" || s == "u--------" 
+    # 1. any damn uninflected thing in Greek, including (in their view) all adverbs!
+    # 2. punctuation
     #
     # pieces[1]      == PoS code
     #
+    elseif s == "r--------" 
+        push!(reslt, GMFUninflected(gmpUninflectedType("preposition")))
+    elseif s == "i--------"
+        push!(reslt, GMFUninflected(gmpUninflectedType("interjection")))
+        
     elseif pieces[1] == "a"
-        function decodeadjective(s)
+        decodeadjective(s)
     elseif pieces[1] == "b"        
         # coord. conj.
     elseif pieces[1] == "c"        
@@ -282,6 +285,4 @@ Kanones uninflected:
     "adverb" => 4,
     "numeral" => 5,
     "interjection"  => 6
-
-
 =#
