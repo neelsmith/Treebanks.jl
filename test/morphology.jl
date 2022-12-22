@@ -11,4 +11,7 @@
    exclam = morphology("i--------" )[1]
    @test exclam isa GMFUninflected
    @test label(exclam.pos) == "interjection"
+
+
+   #a-p---nas
 end

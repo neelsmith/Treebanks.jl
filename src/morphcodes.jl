@@ -1,158 +1,3 @@
-
-"""Return `GMPPerson` for treebanks morphology code string,
-or nothing if no value for person defined.
-$SIGNATURES    
-"""
-function decodeperson(s::T)::Union{Nothing,GMPPerson}  where T <: AbstractString
-    pers = nothing
-    if s == "1"
-        pers = gmpPerson(1)
-    elseif s == "2"
-        pers = gmpPerson(2)
-    elseif s == "3"
-        
-        pers = gmpPerson(3)
-    end
-    pers
-end
-
-
-"""Return `GMPNumber` for treebanks morphology code string,
-or nothing if no value for number defined.
-$SIGNATURES    
-"""
-function decodenumber(s::T)::Union{Nothing,GMPNumber}  where T <: AbstractString
-    num = nothing
-    if s == "s"
-        num = gmpNumber(1)
-    elseif s == "d"
-        num = gmpNumber(2)
-    elseif s == "p"
-        num = gmpNumber(3)
-    end
-    num
-end
-
-"""Return `GMPTense` for treebanks morphology code string,
-or nothing if no value for tense defined.
-$SIGNATURES    
-"""
-function decodetense(s::T)::Union{Nothing,GMPTense}  where T <: AbstractString
-    tense = nothing
-    if s == "p"
-        tense = gmpTense(1)
-    elseif s == "i"    
-        tense = gmpTense(2)
-    elseif s == "a"
-        tense = gmpTense(3)
-    elseif s == "r" 
-        tense = gmpTense(4)
-    elseif s == "l" 
-        tense = gmpTense(5)
-    elseif s == "f"
-        tense = gmpTense(6)
-    end
-    tense
-end
-
-
-"""Return `GMPMood` for treebanks morphology code string,
-or nothing if no value for mood defined.
-$SIGNATURES    
-"""
-function decodemood(s::T)::Union{Nothing,GMPMood}  where T <: AbstractString
-    mood = nothing
-    if s == "i"
-        mood = gmpMood(1)
-    elseif s == "s"
-        mood = gmpMood(2)
-    elseif s == "o"
-        mood = gmpMood(3)
-    elseif s == "m"
-        mood = gmpMood(4)
-    end
-    mood
-end
-
-
-"""Return `GMPVoice` for treebanks morphology code string,
-or nothing if no value for voice is defined.
-$SIGNATURES    
-"""
-function decodevoice(s::T)::Vector{GMPVoice} where T <: AbstractString
-    voice = []
-    @info("Voice ", voice)
-    if s == "a"
-        push!(voice, gmpVoice(1))
-    elseif s == "m"
-        push!(voice, gmpVoice(2))
-    elseif s == "p"
-        push!(voice, gmpVoice(3))
-    elseif s == "e"
-        push!(voice, gmpVoice(2))
-        push!(voice,  gmpVoice(3))
-    end
-    voice
-end
-
-
-
-"""Return `GMPGender` for treebanks morphology code string,
-or nothing if no value for gender is defined.
-$SIGNATURES    
-"""
-function decodegender(s::T)::Union{Nothing,GMPGender}  where T <: AbstractString
-    gender = nothing
-    if s == "m"
-        gender = GMPGender(1)
-    elseif s == "f"
-        gender = GMPGender(2)
-    elseif s == "n"
-        gender = GMPGender(3)
-    end
-    gender
-end
-
-
-
-"""Return `GMPCase` for treebanks morphology code string,
-or nothing if no value for case is defined.
-$SIGNATURES    
-"""
-function decodecase(s::T)::Union{Nothing,GMPCase}  where T <: AbstractString
-    gramcase = nothing
-    if s == "n"
-        gramcase = GMPCase(1)
-    elseif s == "g"
-        gramcase = GMPCase(2)
-    elseif s == "d"
-        gramcase = GMPCase(3)
-    elseif s == "a"
-        gramcase = GMPCase(4)
-    elseif s == "v"
-        gramcase = GMPCase(5)
-    end
-    gramcase
-
-end
-
-"""Return `GMPDegree` for treebanks morphology code string,
-or nothing if no value for degree is defined.
-$SIGNATURES    
-"""
-function decodedegree(s::T)::Union{Nothing,GMPDegree}  where T <: AbstractString
-    degree = nothing
-    if s == "c"
-        degree = GMPDegree(2)
-    elseif s == "s"
-        degree = GMPDegree(3)
-    end
-    degree
-end
-
-
-
-
 """Return a vector of `GMFFiniteVerb` objects for a treebanks morphology code string.
 If no valid value for a finite verb form is encoded, the vector is empty.
 $SIGNATURES    
@@ -189,7 +34,8 @@ function decodeinfinitive(s::T)::Vector{GMFInfinitive} where T <: AbstractString
     reslts
 end
 
-
+function decodeparticiple(s)
+end
 
 """Return a vector of `GMFNoun` objects for a treebanks morphology code string.
 If no valid value for a noun form is encoded, the vector is empty.
@@ -205,6 +51,19 @@ function decodenoun(s::T)::Vector{GMFNoun} where T <: AbstractString
     push!(reslts, GMFNoun(gender, gramcase, num))
 end
 
+"""Return a vector of `GMFPronoun` objects for a treebanks morphology code string.
+If no valid value for a noun form is encoded, the vector is empty.
+$SIGNATURES    
+"""
+function decodepronoun(s::T)::Vector{GMFPronoun} where T <: AbstractString
+    reslts = GMFPronoun[]
+
+    pieces = split(s, "")
+    gender = decodegender(pieces[7])
+    gramcase = decodecase(pieces[8])
+    num = decodenumber(pieces[3])
+    push!(reslts, GMFPronoun(gender, gramcase, num))
+end
 
 """Return a vector of `GMFAdjective` objects for a treebanks morphology code string.
 Note that in AGLDT morphology, only the positive degree of adjectives is encoded!
@@ -230,38 +89,43 @@ function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractStr
     pieces = split(s, "")
     reslt  = GreekMorphologicalForm[] 
     
-    # Ignore these:
+   
     if  s == "d--------" || s == "u--------" 
-    # 1. any damn uninflected thing in Greek, including (in their view) all adverbs!
-    # 2. punctuation
-    #
-    # pieces[1]      == PoS code
-    #
+        # Ignore these:
+        # 1. 'd' == any damn uninflected thing in Greek, including (in their view) all adverbs!
+        # 2. 'u' == punctuation
+    
     elseif s == "r--------" 
         push!(reslt, GMFUninflected(gmpUninflectedType("preposition")))
+
     elseif s == "i--------"
         push!(reslt, GMFUninflected(gmpUninflectedType("interjection")))
-        
+
+    elseif s == "b--------"  || s == "c--------" 
+        # AGLDT distinguishses subordinating and coordinating conjunctions.
+        # That is a syntactic and semantic distinction, not a morphological
+        # distinction for Kanones.
+        GMFUninflected(gmpUninflectedType("conjunction"))
+
+    # pieces[1]      == PoS code        
     elseif pieces[1] == "a"
         decodeadjective(s)
-    elseif pieces[1] == "b"        
-        # coord. conj.
-    elseif pieces[1] == "c"        
-        # subord. conj.
-    elseif pieces[1] == "i" 
-        # exclamatory W!
-    elseif pieces[1] == "l"         
-        # ARTICLE
+
     elseif pieces[1] == "n"  
-        reslt =  decodenoun(s)              
-   
-    elseif pieces[1] == "p"                         
-        # PRONOUN
+        reslt =  decodenoun(s) 
+
+    elseif pieces[1] == "l" ||  pieces[1] == "p"  
+        # 1. article
+        # 2. pronoun
+        # In Kanones, these belong to the same analytical category
+        deocodepronoun(s)
+                                        
+ 
     elseif pieces[1] == "v"
+        # AGLDT thinks that participles and infinitives are moods of a verb.
         if pieces[5] == "p"
-            # participle
+            decodeparticiple
         elseif pieces[5] == "n"
-            # infinitive
             reslt = decodeinfinitive(s)
         elseif pieces[2] != "-"
             reslt = decodefiniteverb(s)
@@ -278,11 +142,25 @@ urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141255|δυναμένους|δύναμα�
 urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141256|ἀποδέδοται|ἀποδίδωμι|v3srie---|0|PRED
 =#
 #=
-Kanones uninflected:
-    "conjunction" => 1,
-    "preposition" => 2,
-    "particle" => 3,
-    "adverb" => 4,
-    "numeral" => 5,
-    "interjection"  => 6
+Kanones uninflected parts of speech: ✅ == encoded, ❌ == not encoded in AGLDT
+    "✅ conjunction" => 1,
+    "✅ preposition" => 2,
+    "❌particle" => 3,
+    "❌adverb" => 4,
+    "❌numeral" => 5,
+    "✅ interjection"  => 6
 =#
+
+#= 11 AGLDT  PoS codes ✅ == handled by `morphology` function
+ ✅ 'a': ASCII/Unicode U+0061 (category Ll: Letter, lowercase)
+ ✅ 'b': ASCII/Unicode U+0062 (category Ll: Letter, lowercase)
+ ✅ 'c': ASCII/Unicode U+0063 (category Ll: Letter, lowercase)
+ ✅ 'd': ASCII/Unicode U+0064 (category Ll: Letter, lowercase)
+ ✅ 'i': ASCII/Unicode U+0069 (category Ll: Letter, lowercase)
+ 'l': ASCII/Unicode U+006C (category Ll: Letter, lowercase)
+ ✅ 'n': ASCII/Unicode U+006E (category Ll: Letter, lowercase)
+ 'p': ASCII/Unicode U+0070 (category Ll: Letter, lowercase)
+ ✅ 'r': ASCII/Unicode U+0072 (category Ll: Letter, lowercase)
+ ✅ 'u': ASCII/Unicode U+0075 (category Ll: Letter, lowercase)
+ ✅ 'v': ASCII/Unicode U+0076 (category Ll: Letter, lowercase)
+ =#
