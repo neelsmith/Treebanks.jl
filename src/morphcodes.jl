@@ -1,5 +1,8 @@
 
-
+"""Return `GMPPerson` for treebanks morphology code string,
+or nothing if no value for person defined.
+$SIGNATURES    
+"""
 function decodeperson(s::T)::Union{Nothing,GMPPerson}  where T <: AbstractString
     pers = nothing
     if s == "1"
@@ -175,10 +178,12 @@ function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractStr
     pieces = split(s, "")
     reslt  = GreekMorphologicalForm[] 
     
+    # Ignore these:
     if s == "r--------" || s == "d--------" || s == "u--------"
-    # 1. preposition and any damn uninflected thing in Greek,
-    # 2. including all adverbs!
+    # 1. preposition 
+    # 2. any damn uninflected thing in Greek, including (in their view) all adverbs!
     # 3. punctuation
+    #
     #
     # pieces[1]      == PoS code
     #
