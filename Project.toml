@@ -1,7 +1,7 @@
 name = "Treebanks"
 uuid = "64f30800-8bfd-42c1-8d67-a0fe2fc2f5f5"
 authors = ["Neel Smith  <dnsmith.neel@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 CitableBase = "d6f014bd-995c-41bd-9893-703339864534"

@@ -34,7 +34,24 @@ function decodeinfinitive(s::T)::Vector{GMFInfinitive} where T <: AbstractString
     reslts
 end
 
-function decodeparticiple(s)
+
+"""Return a vector of `GMFParticiple` objects for a treebanks morphology code string.
+If no valid value for an infinitive form is encoded, the vector is empty.
+$SIGNATURES    
+"""
+function decodeparticiple(s::T)::Vector{GMFParticiple} where T <: AbstractString
+    reslts = GMFParticiple[]
+
+    pieces = split(s, "")
+    tense = decodetense(pieces[4])
+    voice = decodevoice(pieces[6])
+    gender = decodegender(pieces[7])
+    gramcase = decodecase(pieces[8])
+    num = decodenumber(pieces[3])
+    for v in voice
+        push!(reslts, GMFParticiple(tense, v, gender, gramcase, num))
+    end
+    reslts
 end
 
 """Return a vector of `GMFNoun` objects for a treebanks morphology code string.
@@ -77,8 +94,10 @@ function decodeadjective(s::T)::Vector{GMFAdjective} where T <: AbstractString
     gender = decodegender(pieces[7])
     gramcase = decodecase(pieces[8])
     num = decodenumber(pieces[3])
-    positivedegree = GMPDegree(1)
-    push!(reslts, GMFAdjective(gender, gramcase, num, positivedegree))
+
+
+    degree = pieces[9] == "-" ? GMPDegree(1) : decodedegree(pieces[9])
+    push!(reslts, GMFAdjective(gender, gramcase, num, degree))
 end
 
 
@@ -109,7 +128,7 @@ function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractStr
 
     # pieces[1]      == PoS code        
     elseif pieces[1] == "a"
-        decodeadjective(s)
+        reslt = decodeadjective(s)
 
     elseif pieces[1] == "n"  
         reslt =  decodenoun(s) 
@@ -118,13 +137,13 @@ function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractStr
         # 1. article
         # 2. pronoun
         # In Kanones, these belong to the same analytical category
-        deocodepronoun(s)
+        reslt = decodepronoun(s)
                                         
  
     elseif pieces[1] == "v"
         # AGLDT thinks that participles and infinitives are moods of a verb.
         if pieces[5] == "p"
-            decodeparticiple
+            reslt = decodeparticiple(s)
         elseif pieces[5] == "n"
             reslt = decodeinfinitive(s)
         elseif pieces[2] != "-"
@@ -157,9 +176,9 @@ Kanones uninflected parts of speech: ✅ == encoded, ❌ == not encoded in AGLDT
  ✅ 'c': ASCII/Unicode U+0063 (category Ll: Letter, lowercase)
  ✅ 'd': ASCII/Unicode U+0064 (category Ll: Letter, lowercase)
  ✅ 'i': ASCII/Unicode U+0069 (category Ll: Letter, lowercase)
- 'l': ASCII/Unicode U+006C (category Ll: Letter, lowercase)
+ ✅ 'l': ASCII/Unicode U+006C (category Ll: Letter, lowercase)
  ✅ 'n': ASCII/Unicode U+006E (category Ll: Letter, lowercase)
- 'p': ASCII/Unicode U+0070 (category Ll: Letter, lowercase)
+✅ 'p': ASCII/Unicode U+0070 (category Ll: Letter, lowercase)
  ✅ 'r': ASCII/Unicode U+0072 (category Ll: Letter, lowercase)
  ✅ 'u': ASCII/Unicode U+0075 (category Ll: Letter, lowercase)
  ✅ 'v': ASCII/Unicode U+0076 (category Ll: Letter, lowercase)
