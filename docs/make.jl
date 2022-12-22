@@ -17,7 +17,8 @@ makedocs(
     sitename = "Treebanks.jl Documentation",
     pages = [
         "Home" => "index.md",
-        "Modelling Greek syntax" => "model.md"
+        "Modelling Greek syntax" => "model.md",
+        "Morphology" => "morphology.md"
     ]
 )
 

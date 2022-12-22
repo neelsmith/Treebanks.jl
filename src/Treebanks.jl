@@ -22,5 +22,6 @@ include("graphs.jl")
 export Sentence
 export ParsedWord
 export readtreebank
+export morphology
 
 end # module Treebanks

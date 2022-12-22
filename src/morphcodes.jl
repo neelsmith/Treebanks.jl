@@ -222,4 +222,14 @@ urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141254|μέγιστα|μέγας|a-p---na
 urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141255|δυναμένους|δύναμαι|v-pppema-|5141251|ADV
 urn:cts:greekLit:tlg0540tlg001.tb:5.2|5141256|ἀποδέδοται|ἀποδίδωμι|v3srie---|0|PRED
 =#
+#=
+Kanones uninflected:
+    "conjunction" => 1,
+    "preposition" => 2,
+    "particle" => 3,
+    "adverb" => 4,
+    "numeral" => 5,
+    "interjection"  => 6
 
+
+=#
