@@ -75,6 +75,49 @@ function decodevoice(s::T)::Vector{GMPVoice} where T <: AbstractString
     voice
 end
 
+
+function decodegender(s::T)::Union{Nothing,GMPGender}  where T <: AbstractString
+    gender = nothing
+    if s == "m"
+        gender = GMPGender(1)
+    elseif s == "f"
+        gender = GMPGender(2)
+    elseif s == "n"
+        gender = GMPGender(3)
+    end
+    gender
+end
+
+
+
+
+function decodecase(s::T)::Union{Nothing,GMPCase}  where T <: AbstractString
+    gramcase = nothing
+    if s == "n"
+        gramcase = GMPCase(1)
+    elseif s == "g"
+        gramcase = GMPCase(2)
+    elseif s == "d"
+        gramcase = GMPCase(3)
+    elseif s == "a"
+        gramcase = GMPCase(4)
+    elseif s == "v"
+        gramcase = GMPCase(5)
+    end
+    gramcase
+
+end
+
+function decodedegree(s::T)::Union{Nothing,GMPDegree}  where T <: AbstractString
+    degree = nothing
+    if s == "c"
+        degree = GMPDegree(2)
+    elseif s == "s"
+        degree = GMPDegree(3)
+    end
+    degree
+end
+
 function decodefiniteverb(s::T)::Vector{GMFFiniteVerb} where T <: AbstractString
     reslts = GMFFiniteVerb[]
 
@@ -100,6 +143,16 @@ function decodeinfinitive(s::T)::Vector{GMFInfinitive} where T <: AbstractString
         push!(reslts, GMFInfinitive(tense, v))
     end
     reslts
+end
+
+function decodenoun(s::T)::Vector{GMFNoun} where T <: AbstractString
+    reslts = GMFNoun[]
+
+    pieces = split(s, "")
+    gender = decodegender(pieces[7])
+    gramcase = decodecase(pieces[8])
+    num = decodenumber(pieces[3])
+    push!(reslts, GMFNoun(gender, gramcase, num))
 end
 
 #=
@@ -139,8 +192,9 @@ function morphology(s::T)::Vector{GreekMorphologicalForm} where T <: AbstractStr
         # exclamatory W!
     elseif pieces[1] == "l"         
         # ARTICLE
-    elseif pieces[1] == "n"                 
-        # NOUN
+    elseif pieces[1] == "n"  
+        reslt =  decodenoun(s)              
+   
     elseif pieces[1] == "p"                         
         # PRONOUN
     elseif pieces[1] == "v"
