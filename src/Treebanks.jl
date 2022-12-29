@@ -12,6 +12,7 @@ import Base: ispunct
 using Test
 
 
+include("morphproperties.jl")
 include("morphcodes.jl")
 include("words.jl")
 include("sentences.jl")
