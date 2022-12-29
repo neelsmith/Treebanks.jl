@@ -18,6 +18,7 @@ include("words.jl")
 include("sentences.jl")
 include("treebank.jl")
 include("graphs.jl")
+include("markdownutils.jl")
 
 
 export Sentence
