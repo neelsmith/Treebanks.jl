@@ -58,6 +58,15 @@ html"""
 # ╔═╡ 54b42b21-9e6a-4a5a-b537-4309551d8501
 md"""> Load 'em"""
 
+# ╔═╡ a46f0468-b4e3-47bb-b36a-67326a8bac2a
+function linkarticle(ref)
+	fubaseurn = "urn:cite2:hmt:lsj.chicago_md:"
+	fubaseurl = "http://folio2.furman.edu/lsj/?urn="
+	parts = split(ref, ".")
+	target = string(fubaseurl, fubaseurn, parts[2])
+	"[$(ref)]($(target))"
+end
+
 # ╔═╡ f5927faf-aadc-401f-917d-965b62abe03f
 lsjurl = "https://raw.githubusercontent.com/neelsmith/Kanones.jl/main/datasets/lsj-vocab/lexemes/lsj.cex"
 
@@ -105,9 +114,6 @@ function resolve(candidate, pairslist; threshhold = 0.8)
 	end
 end
 
-# ╔═╡ 8deb5a0b-3faf-46c7-8c31-df65c290bfe9
-sortmycf = sort(resolve(s, pairs), by = triple -> triple[3], rev = true)
-
 # ╔═╡ 19f2bf46-2069-486b-8a34-50fecf84938a
 begin
 	if isempty(s)
@@ -117,25 +123,47 @@ begin
 		sortedcf = sort(resolve(s, pairs), by = triple -> triple[3], rev = true)
 		perfect = filter(triple -> triple[3] == 1.0, sortedcf)
 		if length(perfect) == 1
-			md"""## Results: exact match for $(s) 
-			**$(sortedcf[1][1])**			
-			"""
+			reslt = """## Results: exact match for $(s) 
+
+See LSJ article for $(sortedcf[1][1] |> linkarticle)"""
+		Markdown.parse(reslt)
+			
 		elseif length(perfect) > 1
 			items = map(triple -> string("- ", triple[1]), perfect)
 			md"""## Results: multiple exact matches
 $(items)
 """		
+
+
+			
 		else	
-			items = map(triple -> string("- ", triple[1], " ", triple[2], " (", triple[3], ")"), sortedcf[1:n])
-			reslines = ["## Results: no exact match", "",
-			"Closest matches:", ""]
+			items = map(triple -> string("| ", linkarticle(triple[1]), " | ", triple[2], " | ", triple[3], " |"), sortedcf[1:n])
+			
+			reslines = []
 			for i in items
 				push!(reslines, i)
 			end
-			Markdown.parse(join(reslines, "\n"))
+			
+			
+			
+			preface = """Links are to Furman University on-line LSJ
+
+"""			
+			hdr = """|Lemma | ID | Score|
+| --- | --- | --- |
+| - | -| - |
+"""
+			Markdown.parse(preface * hdr * join(reslines, "\n"))
+	
+
+
+
 		end
 	end
 end
+
+# ╔═╡ 8deb5a0b-3faf-46c7-8c31-df65c290bfe9
+sortmycf = sort(resolve(s, pairs), by = triple -> triple[3], rev = true)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -158,7 +186,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.3"
 manifest_format = "2.0"
-project_hash = "6e84d143a48dd6397721c97814992e37ecea9a0e"
+project_hash = "1df15232aebdfc881156930f82e62a0d3767f460"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -933,6 +961,7 @@ version = "17.4.0+0"
 # ╟─19f2bf46-2069-486b-8a34-50fecf84938a
 # ╟─a0832f11-cbee-4c07-bec6-4f30600f1ef8
 # ╟─54b42b21-9e6a-4a5a-b537-4309551d8501
+# ╠═a46f0468-b4e3-47bb-b36a-67326a8bac2a
 # ╟─f5927faf-aadc-401f-917d-965b62abe03f
 # ╟─8deb5a0b-3faf-46c7-8c31-df65c290bfe9
 # ╠═b2694ae1-0806-4333-b8ef-2af923d3971c
