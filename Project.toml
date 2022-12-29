@@ -12,6 +12,7 @@ EzXML = "8f5d6c58-4d21-5cfd-889c-e3ad7ee6a615"
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
 Kanones = "107500f9-53d4-4696-8485-0747242ad8bc"
 SimpleValueGraphs = "b43c691f-cac2-5415-8122-396fe16a49fc"
+StringDistances = "88034a9c-02f8-509d-84a9-84ec65e18404"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestSetExtensions = "98d24dd4-01ad-11ea-1b02-c9a08f80db04"
 
